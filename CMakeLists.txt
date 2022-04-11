@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(amadb
-  VERSION 1.0.0
+  VERSION 1.0.1
   DESCRIPTION "Ama-Framework database"
   HOMEPAGE_URL https://github.com/fpolit/amadb
 )
@@ -12,6 +12,7 @@ set(PROJECT_LICENSE "GPLv3")
 option(CMAKE_BUILD_TESTS  "Build unittest" OFF)
 
 # Finding dependencies
+find_package(Protobuf REQUIRED)
 find_package(Python3  COMPONENTS Interpreter Development REQUIRED)
 
 ## enviroment INFO
@@ -40,9 +41,6 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   endif()
 endif()
 
-
-# protobuf generation
-
 # python package (amadb)
 set(PYTHON_PKG_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/amadb")
 set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
@@ -58,6 +56,26 @@ else()
   set(REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 endif()
 
+# protobuf generation
+set(PYTHON_PKG_PROTOBUF_DIR "${PYTHON_PKG_SOURCE_DIR}/proto")
+list(APPEND PROTOBUF_FILES
+  proto/amadb.proto
+  proto/hash.proto
+  proto/utils.proto
+  proto/workspace.proto
+)
+
+foreach(PROTOBUF_FILE ${PROTOBUF_FILES})
+  get_filename_component(PROTOBUF_NAME ${PROTOBUF_FILE} NAME_WE)
+  protobuf_generate_python(GENERATED_PY_PROTO ${PROTOBUF_FILE})
+
+  set(PROTO_TARGET "${PROTOBUF_NAME}_proto")
+  add_custom_target(${PROTO_TARGET} ALL
+    DEPENDS ${GENERATED_PY_PROTO})
+endforeach()
+
+
+message(DEBUG "PYTHON_PKG_PROTOBUF_DIR: ${PYTHON_PKG_PROTOBUF_DIR}")
 message(DEBUG "PYTHON_PKG_SOURCE_DIR: ${PYTHON_PKG_SOURCE_DIR}")
 message(DEBUG "Python requirements: ${REQUIREMENTS}")
 

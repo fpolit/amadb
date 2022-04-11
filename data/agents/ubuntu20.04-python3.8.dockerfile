@@ -10,4 +10,7 @@ RUN useradd -m -u 970 jenkins && echo "jenkins:jenkins" | chpasswd
 RUN echo "jenkins ALL=(root) NOPASSWD: $(which make)" >> /etc/sudoers
 RUN visudo --check
 
+# start mongodb server
+RUN systemctld start mongodb
+
 USER jenkins

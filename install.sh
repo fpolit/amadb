@@ -16,7 +16,6 @@ fi
 
 mkdir -p $BUILD_DIR
 cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Debug \
-                        -DCMAKE_COMPILER_WALL=ON \
                         -DCMAKE_BUILD_TESTS=ON \
 			-DGIT_UPDATE_SUBMODULES=ON \
                         --log-level=DEBUG || exit 1

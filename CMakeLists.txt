@@ -11,7 +11,6 @@ set(PROJECT_LICENSE "GPLv3")
 # options
 option(CMAKE_BUILD_TESTS  "Build unittest" OFF)
 
-
 # Finding dependencies
 find_package(Python3  COMPONENTS Interpreter Development REQUIRED)
 
@@ -40,6 +39,9 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
   endif()
 endif()
+
+
+# protobuf generation
 
 # python package (amadb)
 set(PYTHON_PKG_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/amadb")

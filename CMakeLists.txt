@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(amadb
-  VERSION 1.0.1
+  VERSION 1.0.2
   DESCRIPTION "Ama-Framework database"
   HOMEPAGE_URL https://github.com/fpolit/amadb
 )
@@ -43,12 +43,14 @@ endif()
 
 # python package (amadb)
 set(PYTHON_PKG_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/amadb")
+set(PYTHON_PKG_PROTO_DIR "${PYTHON_PKG_SOURCE_DIR}/proto")
 set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
 set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
 set(INIT_PY_IN  "${PYTHON_PKG_SOURCE_DIR}/__init__.py.in")
 set(INIT_PY     "${PYTHON_PKG_SOURCE_DIR}/__init__.py")
 set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build")
 set(TIMESTAMP   "${OUTPUT}/timestamp")
+set(INIT_AMADB_PY_PROTOS "${OUTPUT}/pyprotos")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   set(REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/requirements-dev.txt")
@@ -57,25 +59,15 @@ else()
 endif()
 
 # protobuf generation
-set(PYTHON_PKG_PROTOBUF_DIR "${PYTHON_PKG_SOURCE_DIR}/proto")
-list(APPEND PROTOBUF_FILES
-  proto/amadb.proto
-  proto/hash.proto
-  proto/utils.proto
-  proto/workspace.proto
-)
+add_subdirectory(proto)
+list(JOIN AMADB_GENERATED_PY_PROTOS " " AMADB_PY_PROTOS)
+message(DEBUG "AMADB_PY_PROTOS: ${AMADB_PY_PROTOS}")
+add_custom_command(OUTPUT ${INIT_AMADB_PY_PROTOS}
+    COMMAND ${CMAKE_COMMAND} -E copy ${AMADB_PY_PROTOS} ${PYTHON_PKG_PROTO_DIR}
+    COMMAND ${CMAKE_COMMAND} -E touch ${INIT_AMADB_PY_PROTOS}
+    DEPENDS amadb_pyprotos)
 
-foreach(PROTOBUF_FILE ${PROTOBUF_FILES})
-  get_filename_component(PROTOBUF_NAME ${PROTOBUF_FILE} NAME_WE)
-  protobuf_generate_python(GENERATED_PY_PROTO ${PROTOBUF_FILE})
-
-  set(PROTO_TARGET "${PROTOBUF_NAME}_proto")
-  add_custom_target(${PROTO_TARGET} ALL
-    DEPENDS ${GENERATED_PY_PROTO})
-endforeach()
-
-
-message(DEBUG "PYTHON_PKG_PROTOBUF_DIR: ${PYTHON_PKG_PROTOBUF_DIR}")
+message(DEBUG "PYTHON_PKG_PROTO_DIR: ${PYTHON_PKG_PROTO_DIR}")
 message(DEBUG "PYTHON_PKG_SOURCE_DIR: ${PYTHON_PKG_SOURCE_DIR}")
 message(DEBUG "Python requirements: ${REQUIREMENTS}")
 
@@ -84,9 +76,11 @@ configure_file(${INIT_PY_IN} ${INIT_PY})
 
 add_custom_command(OUTPUT ${TIMESTAMP}
 	COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} build
-	COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP})
+	COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP}
+        DEPENDS ${INIT_AMADB_PY_PROTOS}
+  )
 
-add_custom_target(target ALL DEPENDS ${TIMESTAMP})
+add_custom_target(pybuild ALL DEPENDS ${TIMESTAMP})
 install(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install -r ${REQUIREMENTS})")
 install(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} install --verbose)")
 

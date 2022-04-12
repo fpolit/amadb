@@ -56,9 +56,10 @@ else()
   set(REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 endif()
 
-# protobuf generation and copy to AMADB_PY_PROTO_DESTINATION (NOTE: generated target => amadb_pyprotos)
-set(AMADB_PY_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
+# protobuf generation and copy to AMADB_PY_PROTO_DESTINATION (NOTE: generated target => amadb_protos)
+set(AMADB_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
 add_subdirectory(proto)
+
 
 message(DEBUG "PYTHON_PKG_PROTO_DIR: ${PYTHON_PKG_PROTO_DIR}")
 message(DEBUG "PYTHON_PKG_SOURCE_DIR: ${PYTHON_PKG_SOURCE_DIR}")
@@ -69,7 +70,7 @@ configure_file(${INIT_PY_IN} ${INIT_PY})
 
 add_custom_target(pybuild ALL
   COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} build --verbose
-  DEPENDS amadb_pyprotos
+  DEPENDS amadb_protos
 )
 
 # add_custom_target(pybuild ALL DEPENDS ${TIMESTAMP})

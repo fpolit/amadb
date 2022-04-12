@@ -1,13 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(amadb
-  VERSION 1.0.2
+  VERSION 1.0.3
   DESCRIPTION "Ama-Framework database"
   HOMEPAGE_URL https://github.com/fpolit/amadb
 )
 
 set(PROJECT_LICENSE "GPLv3")
-
 # options
 option(CMAKE_BUILD_TESTS  "Build unittest" OFF)
 
@@ -50,7 +49,6 @@ set(INIT_PY_IN  "${PYTHON_PKG_SOURCE_DIR}/__init__.py.in")
 set(INIT_PY     "${PYTHON_PKG_SOURCE_DIR}/__init__.py")
 set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build")
 set(TIMESTAMP   "${OUTPUT}/timestamp")
-set(INIT_AMADB_PY_PROTOS "${OUTPUT}/pyprotos")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   set(REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/requirements-dev.txt")
@@ -58,14 +56,9 @@ else()
   set(REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 endif()
 
-# protobuf generation
+# protobuf generation and copy to AMADB_PY_PROTO_DESTINATION (NOTE: generated target => amadb_pyprotos)
+set(AMADB_PY_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
 add_subdirectory(proto)
-list(JOIN AMADB_GENERATED_PY_PROTOS " " AMADB_PY_PROTOS)
-message(DEBUG "AMADB_PY_PROTOS: ${AMADB_PY_PROTOS}")
-add_custom_command(OUTPUT ${INIT_AMADB_PY_PROTOS}
-    COMMAND ${CMAKE_COMMAND} -E copy ${AMADB_PY_PROTOS} ${PYTHON_PKG_PROTO_DIR}
-    COMMAND ${CMAKE_COMMAND} -E touch ${INIT_AMADB_PY_PROTOS}
-    DEPENDS amadb_pyprotos)
 
 message(DEBUG "PYTHON_PKG_PROTO_DIR: ${PYTHON_PKG_PROTO_DIR}")
 message(DEBUG "PYTHON_PKG_SOURCE_DIR: ${PYTHON_PKG_SOURCE_DIR}")
@@ -74,13 +67,12 @@ message(DEBUG "Python requirements: ${REQUIREMENTS}")
 configure_file(${SETUP_PY_IN} ${SETUP_PY})
 configure_file(${INIT_PY_IN} ${INIT_PY})
 
-add_custom_command(OUTPUT ${TIMESTAMP}
-	COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} build
-	COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP}
-        DEPENDS ${INIT_AMADB_PY_PROTOS}
-  )
+add_custom_target(pybuild ALL
+  COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} build --verbose
+  DEPENDS amadb_pyprotos
+)
 
-add_custom_target(pybuild ALL DEPENDS ${TIMESTAMP})
+# add_custom_target(pybuild ALL DEPENDS ${TIMESTAMP})
 install(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install -r ${REQUIREMENTS})")
 install(CODE "execute_process(COMMAND ${Python3_EXECUTABLE} ${SETUP_PY} install --verbose)")
 

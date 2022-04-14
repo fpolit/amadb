@@ -8,7 +8,7 @@ pipeline{
 
     agent {
         dockerfile {
-            filename "ubuntu20.04-python3.8.dockerfile"
+            filename "ubuntu20.04-python3.8-mongodb5.dockerfile"
             dir 'data/agents/'
         }
     }

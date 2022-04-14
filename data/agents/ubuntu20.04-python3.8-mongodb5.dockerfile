@@ -1,6 +1,8 @@
-FROM ubuntu:20.04
+FROM amd64/mongo:5-focal
+# System version  : Ubuntu focal (20.04)
 # Python version  : 3.8
 # C/CXX compilers : 9.
+# MongoDB version : 5.0.7
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -19,7 +21,7 @@ RUN useradd -m -u 970 jenkins && echo "jenkins:jenkins" | chpasswd
 RUN echo "jenkins ALL=(root) NOPASSWD: $(which make)" >> /etc/sudoers
 RUN visudo --check
 
-# start mongodb server
-RUN systemctl start mongodb
+# grant mongodb group permission to jenkins user
+RUN usermod -aG mongodb jenkins
 
 USER jenkins

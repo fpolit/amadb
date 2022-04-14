@@ -56,9 +56,9 @@ else()
   set(REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 endif()
 
-# protobuf generation and copy to AMADB_PY_PROTO_DESTINATION (NOTE: generated target => amadb_protos)
+# protobuf generation and copy to AMADB_PY_PROTO_DESTINATION
 set(AMADB_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
-add_subdirectory(proto)
+add_subdirectory(proto) # generated target: amadb_protos
 
 
 message(DEBUG "PYTHON_PKG_PROTO_DIR: ${PYTHON_PKG_PROTO_DIR}")

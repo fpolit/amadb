@@ -23,6 +23,9 @@ message(DEBUG "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(DEBUG "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(DEBUG "Python3_VERSION: ${Python3_VERSION}")
 message(DEBUG "Python3_EXECUTABLE: ${Python3_EXECUTABLE}")
+message(DEBUG "CMAKE_BUILD_AMADB_PY_PROTO: ${CMAKE_BUILD_AMADB_PY_PROTO}")
+message(DEBUG "CMAKE_BUILD_AMADB_CXX_PROTO: ${CMAKE_BUILD_AMADB_CXX_PROTO}")
+message(DEBUG "AMADB_PY_PROTO_DESTINATION: ${AMADB_PY_PROTO_DESTINATION}")
 
 # Updating git submodules
 find_package(Git)
@@ -61,8 +64,8 @@ if(NOT CMAKE_BUILD_AMADB_PY_PROTO AND NOT CMAKE_BUILD_AMADB_CXX_PROTO)
   message(FATAL_ERROR "No proto buffer files will be generated (Enable at least one variable: CMAKE_BUILD_AMADB_PY_PROTO  or CMAKE_BUILD_AMADB_CXX_PROTO)")
 endif()
 
-set(AMADB_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
-add_subdirectory(proto) # generated target: amadb_protos
+set(AMADB_PY_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
+add_subdirectory(proto) # generated target: amadb_protos (amadb_py_protos target and amadb_cxx_protos library)
 
 
 message(DEBUG "PYTHON_PKG_PROTO_DIR: ${PYTHON_PKG_PROTO_DIR}")

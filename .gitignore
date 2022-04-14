@@ -1,0 +1,10 @@
+*~
+.*
+**/__pycache__
+amadb/proto/*_pb2.py
+amadb/proto/*_pb2_grpc.py
+amadb/__init__.py
+amadb.egg-info
+build
+env
+tmp

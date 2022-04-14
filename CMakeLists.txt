@@ -57,6 +57,10 @@ else()
 endif()
 
 # protobuf generation and copy to AMADB_PY_PROTO_DESTINATION
+if(NOT CMAKE_BUILD_AMADB_PY_PROTO AND NOT CMAKE_BUILD_AMADB_CXX_PROTO)
+  message(FATAL_ERROR "No proto buffer files will be generated (Enable at least one variable: CMAKE_BUILD_AMADB_PY_PROTO  or CMAKE_BUILD_AMADB_CXX_PROTO)")
+endif()
+
 set(AMADB_PROTO_DESTINATION ${PYTHON_PKG_PROTO_DIR})
 add_subdirectory(proto) # generated target: amadb_protos
 

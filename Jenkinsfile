@@ -1,9 +1,12 @@
 pipeline{
     environment {
         LOGLEVEL='DEBUG'
-        CMAKE_COMPILER_WALL='ON'
         CMAKE_BUILD_TYPE='Debug'
         CMAKE_BUILD_TESTS='ON'
+
+        // amadb protobuf files
+        CMAKE_BUILD_AMADB_PY_PROTO='ON'
+        CMAKE_BUILD_AMADB_CXX_PROTO='ON'
     }
 
     agent {
@@ -21,6 +24,8 @@ pipeline{
                 cmake -S . -B build -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
                                     -DCMAKE_COMPILER_WALL=${CMAKE_COMPILER_WALL} \
                                     -DCMAKE_BUILD_TESTS=${CMAKE_BUILD_TESTS} \
+                                    -DCMAKE_BUILD_AMADB_PY_PROTO=${CMAKE_BUILD_AMADB_PY_PROTO} \
+                                    -DCMAKE_BUILD_AMADB_CXX_PROTO=${CMAKE_BUILD_AMADB_CXX_PROTO} \
                                     --log-level=${LOGLEVEL} || exit 1
                 make -C build
                 '''

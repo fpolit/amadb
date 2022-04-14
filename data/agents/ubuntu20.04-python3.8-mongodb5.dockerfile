@@ -7,12 +7,12 @@ FROM amd64/mongo:5-focal
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && apt-get -y full-upgrade
-RUN apt -y install python3.8 python3.8-dev python3-pymongo mongodb-server # required dependencies
-RUN apt -y install python3-setuptools python3-pip python3.8-venv git make cmake sudo protobuf-compiler systemd # build dependencies
+RUN apt -y install python3.8 python3.8-dev python3-pymongo # required dependencies (mongo-server package is supplied by image)
+RUN apt -y install python3-setuptools python3-pip python3.8-venv git make cmake sudo protobuf-compiler # build dependencies
 
 # create python virtual enviroment
-RUN python3 -m venv env
-ENV PATH="env/bin:$PATH"
+#RUN python3 -m venv env
+#ENV PATH="env/bin:$PATH"
 
 # python protobuf generation
 RUN python3 -m pip install grpcio grpcio-tools

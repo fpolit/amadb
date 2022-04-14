@@ -20,6 +20,6 @@ RUN echo "jenkins ALL=(root) NOPASSWD: $(which make)" >> /etc/sudoers
 RUN visudo --check
 
 # start mongodb server
-RUN systemctld start mongodb
+RUN systemctl start mongodb
 
 USER jenkins

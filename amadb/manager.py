@@ -60,7 +60,7 @@ class DBManager:
         return rs
 
     @classmethod
-    def get_hashes(worskpace: Workspace, state: Hash.state):
+    def get_hashes(worskpace: Workspace, state: Hash.State):
         result = self._db.hashes.find({'workspace': workspace.name,
                                        'state': state})
 

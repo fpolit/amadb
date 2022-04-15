@@ -41,14 +41,14 @@ class AmaDB(AmaDBServicer):
     def get_cracked_hashes(self, request: Workspace, context):
         workspace = workspace
         hashes = self.manager.get_hashes(workspace,
-                                         state=Hash.state.CRACKED)
+                                         state=Hash.State.CRACKED)
         for h in hashes:
             yield h
 
     def get_uncracked_hashes(self, request: Workspace, context):
         workspace = workspace
         hashes = self.manager.get_hashes(workspace,
-                                         state=Hash.state.UNCRACKED)
+                                         state=Hash.State.UNCRACKED)
         for h in hashes:
             yield h
 

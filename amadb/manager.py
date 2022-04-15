@@ -8,8 +8,9 @@ from pymongo.database import Database
 from amadb.proto.hash_pb2 import Hash
 from amadb.proto.workspace_pb2 import Workspace
 from amadb.proto.amadb_pb2 import RegisterHashRequest
+from amadb.proto.utils_pb2 import ReturnStatus
 
-from amadb.utils.misc import hash2dict
+from amadb.utils.misc import hash2dict, dict2hash
 
 class DBManager:
     _client: MongoClient
@@ -32,21 +33,56 @@ class DBManager:
 
         cls._db = cls._client[dbname]
 
-    def create_workspace(cls, workspace: Workspace):
-        data = {
-            '_id': workspace.id,
-            'name': workspace.name,
-            'hashes': []
-        }
-        cls._db.insert_one(data)
+    def is_registered_workspace(cls, workspace: Workspace):
+        """
+        Check if workspace was registered in db.workspaces collection
+        """
+        result = cls._db.workspaces.find({'_id': workspace.id,
+                                          'name': worspace.name})
+        if result is None:
+            return False
+        return True
 
-    # @classmethod
-    # def register_hash(cls, request: RegisterHashRequest):
-    #     workspace = request.workspace
-    #     data = hash2dict(request.hash) # hash -> dict
+    @classmethod
+    def create_workspace(cls, workspace: Workspace) -> ReturnStatus:
+        rs = ReturnStatus(status=ReturnStatus.state.OK)
+        try:
+            data = {
+                '_id': workspace.id,
+                'name': workspace.name,
+            }
+            cls._db.workspaces.insert_one(data)
 
-    #     # check if hash was registered
-    #     if rhash := cls._db.hashes.find({'value': crypher_hash.value}): # rhash = registered hash
-    #         cls._db.hashes.update_one({'_id': rhash._id}, {'$set': hdata})
-    #     else:
-    #         cls._db.hashes.insert_one(hdata)
+        except Exception as erro:
+            rs.details = error
+            rs.state = ReturnStatus.state.ERROR
+
+        return rs
+
+    @classmethod
+    def get_hashes(worskpace: Workspace, state: Hash.state):
+        result = self._db.hashes.find({'workspace': workspace.name,
+                                       'state': state})
+
+        return [dict2hash(hash_data) for hash_data in result]
+
+
+    @classmethod
+    def register_hash(cls, request: RegisterHashRequest) -> ReturnStatus:
+        workspace = request.workspace
+        data = hash2dict(request.hash) # hash -> dict
+
+        rs = ReturnStatus(state=ReturnStatus.state.OK)
+        try:
+            # check if workspace exists
+            if not self.is_registered_workspace(workspace):
+                raise Exception(f"Inserting hash {request.hash} to non-existent workspace {workspace}")
+
+            data['workspace'] = workspace.name
+            self._cmd.hashes.insert_one(data)
+
+        except Exception as error:
+            rs.details = error
+            rs.state = ReturnStatus.state.ERROR
+
+        return rs

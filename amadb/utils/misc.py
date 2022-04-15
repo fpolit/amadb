@@ -12,3 +12,7 @@ def hash2dict(h: Hash):
     }
 
     return hdata
+
+def dict2hash(h: Hash):
+    # IMPLEMENT ME PLEASE
+    return Hash()

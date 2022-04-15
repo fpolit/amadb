@@ -2,7 +2,7 @@
 
 CLEAN=1
 CLEAN_PYCACHE=1
-GFILES=(amadb.egg-info dist build amadb/__init__.py)  # generated files and directories
+GFILES=(amadb.egg-info dist build amadb/__init__.py amadb/proto/*_pb2.py amadb/proto/*_pb2_grpc.py)  # generated files and directories
 RUNTESTS=1
 BUILD_DIR=build
 

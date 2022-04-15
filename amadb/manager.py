@@ -45,7 +45,7 @@ class DBManager:
 
     @classmethod
     def create_workspace(cls, workspace: Workspace) -> ReturnStatus:
-        rs = ReturnStatus(status=ReturnStatus.state.OK)
+        rs = ReturnStatus(status=ReturnStatus.State.OK)
         try:
             data = {
                 '_id': workspace.id,
@@ -55,7 +55,7 @@ class DBManager:
 
         except Exception as erro:
             rs.details = error
-            rs.state = ReturnStatus.state.ERROR
+            rs.state = ReturnStatus.State.ERROR
 
         return rs
 
@@ -72,7 +72,7 @@ class DBManager:
         workspace = request.workspace
         data = hash2dict(request.hash) # hash -> dict
 
-        rs = ReturnStatus(state=ReturnStatus.state.OK)
+        rs = ReturnStatus(state=ReturnStatus.State.OK)
         try:
             # check if workspace exists
             if not self.is_registered_workspace(workspace):
@@ -83,6 +83,6 @@ class DBManager:
 
         except Exception as error:
             rs.details = error
-            rs.state = ReturnStatus.state.ERROR
+            rs.state = ReturnStatus.State.ERROR
 
         return rs
